@@ -1,0 +1,54 @@
+name: Update submodules
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          # The add-on repo is private, so the default token can't fetch it.
+          token: ${{ secrets.SUBMODULES_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest branches
+        id: bump
+        run: |
+          declare -A old
+          for path in $(git config -f .gitmodules --get-regexp '\.path$' | awk '{print $2}'); do
+            old[$path]=$(git -C "$path" rev-parse HEAD)
+          done
+          git submodule update --remote --recursive
+
+          body=""
+          for path in "${!old[@]}"; do
+            new=$(git -C "$path" rev-parse HEAD)
+            [ "$new" = "${old[$path]}" ] && continue
+            body+="**$path** ${old[$path]:0:7}..${new:0:7}"$'\n\n'
+            body+=$(git -C "$path" log --format='- %h %s' "${old[$path]}..$new" | head -n 30)$'\n\n'
+          done
+
+          if [ -z "$body" ]; then
+            echo "Everything is already up to date."
+          fi
+          {
+            echo "body<<EOF"
+            printf '%s' "$body"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.SUBMODULES_TOKEN || secrets.GITHUB_TOKEN }}
+          branch: update-submodules
+          commit-message: Update submodules
+          title: Update submodules
+          body: ${{ steps.bump.outputs.body }}
+          delete-branch: true
