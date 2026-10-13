@@ -1,0 +1,20 @@
+[submodule "AtumVR"]
+	path = AtumVR
+	url = https://github.com/HoloCraft-MR/AtumVR.git
+	branch = master
+[submodule "Visor"]
+	path = Visor
+	url = https://github.com/HoloCraft-MR/Visor.git
+	branch = dev
+[submodule "Pojlib"]
+	path = Pojlib
+	url = https://github.com/HoloCraft-MR/Pojlib.git
+	branch = QuestCraft-6.0.0
+[submodule "QCXR-XR-Wrapper"]
+	path = QCXR-XR-Wrapper
+	url = https://github.com/HoloCraft-MR/QCXR-XR-Wrapper.git
+	branch = master
+[submodule "HoloCraft-MR"]
+	path = HoloCraft-MR
+	url = https://github.com/ATechAdventurer/HoloCraft-MR.git
+	branch = main
