@@ -13,6 +13,7 @@ OUT="${OUT:-$ROOT/outputs}"
 APK="$OUT/HoloCraft-$MC.apk"
 SERVER_ZIP="$OUT/HoloCraft-Server-$MC.zip"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
+VERSION="${VERSION:-$(git -C "$ROOT" describe --tags 2>/dev/null || echo "dev-$(git -C "$ROOT" rev-parse --short HEAD)")}"
 
 # Server versions. Loader matches what Visor builds against, fabric-api what
 # both Visor and the add-on depend on.
@@ -76,6 +77,7 @@ unity() {
     -projectPath "$ROOT/QCXR-XR-Wrapper" \
     -buildTarget Android \
     -executeMethod QuestCraftVisorBuild.BuildAndroid \
+    -holocraftVersion "${VERSION#v}" \
     -logFile "$ROOT/logs/unity.log"
   if [ "$unity_out" != "$APK" ]; then
     mv -f "$unity_out" "$APK"

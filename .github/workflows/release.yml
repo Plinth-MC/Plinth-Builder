@@ -72,6 +72,7 @@ jobs:
           projectPath: ci/unity/QCXR-XR-Wrapper
           buildMethod: QuestCraftVisorBuild.BuildAndroid
           versioning: None
+          customParameters: -holocraftVersion ${{ env.VERSION }}
 
       - name: Sign APK
         env:
