@@ -38,7 +38,7 @@ atumvr() {
 
 visor() {
   log "Visor $MC"
-  (cd "$ROOT/Visor" && sh ./gradlew ":visor-fabric:$MC:build")
+  (cd "$ROOT/Visor" && sh ./gradlew --configure-on-demand ":visor-fabric:$MC:build")
 }
 
 addon() {
