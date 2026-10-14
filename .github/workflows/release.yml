@@ -43,6 +43,11 @@ jobs:
       - name: Build mods and Pojlib
         run: scripts/build.sh atumvr visor addon mods pojlib
 
+      - name: Server zip
+        run: |
+          scripts/build.sh server
+          mv outputs/HoloCraft-Server-1.20.1.zip "outputs/HoloCraft-Server-${VERSION#v}.zip"
+
       # BuildAndroid writes to <project>/../../outputs, so nest the project
       # two levels down to keep that inside the workspace.
       - name: Move wrapper
