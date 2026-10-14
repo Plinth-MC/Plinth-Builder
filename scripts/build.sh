@@ -3,6 +3,7 @@
 #   scripts/build.sh                 # atumvr visor addon mods pojlib unity
 #   scripts/build.sh pojlib unity
 #   scripts/build.sh install         # adb install the last APK
+#   scripts/build.sh visor addon server   # Fabric dedicated server zip
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -10,7 +11,14 @@ MC=1.20.1
 UNITY="${UNITY:-/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity}"
 OUT="${OUT:-$ROOT/outputs}"
 APK="$OUT/HoloCraft-$MC.apk"
+SERVER_ZIP="$OUT/HoloCraft-Server-$MC.zip"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
+
+# Server versions. Loader matches what Visor builds against, fabric-api what
+# both Visor and the add-on depend on.
+FABRIC_LOADER="${FABRIC_LOADER:-0.16.14}"
+FABRIC_INSTALLER="${FABRIC_INSTALLER:-1.1.2}"
+FABRIC_API="${FABRIC_API:-0.92.3+$MC}"
 
 log() { printf '\n== %s\n' "$*"; }
 
@@ -80,12 +88,41 @@ install() {
   adb install -r "$APK"
 }
 
+server() {
+  log "Fabric $MC dedicated server"
+  local visor_jar addon_jar dir
+  visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
+  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  dir=$(mktemp -d)
+  mkdir -p "$dir/mods" "$OUT"
+
+  curl -fsSL -o "$dir/fabric-server-launch.jar" \
+    "https://meta.fabricmc.net/v2/versions/loader/$MC/$FABRIC_LOADER/$FABRIC_INSTALLER/server/jar"
+  curl -fsSL -o "$dir/mods/fabric-api-$FABRIC_API.jar" \
+    "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$FABRIC_API/fabric-api-$FABRIC_API.jar"
+  cp "$visor_jar" "$addon_jar" "$dir/mods/"
+
+  cat > "$dir/start.sh" <<'EOF'
+#!/bin/sh
+cd "$(dirname "$0")"
+exec java -Xmx"${MEMORY:-4G}" -jar fabric-server-launch.jar nogui "$@"
+EOF
+  chmod +x "$dir/start.sh"
+  printf '@echo off\r\ncd /d "%%~dp0"\r\njava -Xmx4G -jar fabric-server-launch.jar nogui %%*\r\npause\r\n' > "$dir/start.bat"
+
+  rm -f "$SERVER_ZIP"
+  (cd "$dir" && zip -qr "$SERVER_ZIP" .)
+  rm -rf "$dir"
+  unzip -l "$SERVER_ZIP"
+  echo "Server: $SERVER_ZIP"
+}
+
 steps=("$@")
 [ ${#steps[@]} -gt 0 ] || steps=(atumvr visor addon mods pojlib unity)
 
 for step in "${steps[@]}"; do
   case "$step" in
-    atumvr|visor|addon|mods|pojlib|unity|install) ;;
+    atumvr|visor|addon|mods|pojlib|unity|install|server) ;;
     *) echo "Unknown step: $step" >&2; exit 1 ;;
   esac
 done
