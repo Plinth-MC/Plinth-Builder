@@ -25,17 +25,17 @@ check_disk() {
 
 atumvr() {
   log "AtumVR -> mavenLocal"
-  (cd "$ROOT/AtumVR" && ./gradlew publishToMavenLocal)
+  (cd "$ROOT/AtumVR" && sh ./gradlew publishToMavenLocal)
 }
 
 visor() {
   log "Visor $MC"
-  (cd "$ROOT/Visor" && ./gradlew ":visor-fabric:$MC:build")
+  (cd "$ROOT/Visor" && sh ./gradlew ":visor-fabric:$MC:build")
 }
 
 addon() {
   log "HoloCraft MR add-on"
-  (cd "$ROOT/HoloCraft-MR" && ./gradlew build -PvisorPath="$ROOT/Visor")
+  (cd "$ROOT/HoloCraft-MR" && sh ./gradlew build -PvisorPath="$ROOT/Visor")
 }
 
 mods() {
@@ -52,7 +52,7 @@ mods() {
 
 pojlib() {
   log "Pojlib release AAR"
-  (cd "$ROOT/Pojlib" && ./gradlew assembleRelease)
+  (cd "$ROOT/Pojlib" && sh ./gradlew assembleRelease)
   cp "$ROOT/Pojlib/build/outputs/aar/Pojlib-release.aar" \
      "$ROOT/QCXR-XR-Wrapper/Assets/Plugins/Android/Pojlib-release.aar"
 }
