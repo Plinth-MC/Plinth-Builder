@@ -16,5 +16,5 @@
 	branch = master
 [submodule "HoloCraft-MR"]
 	path = HoloCraft-MR
-	url = https://github.com/ATechAdventurer/HoloCraft-MR.git
+	url = https://github.com/HoloCraft-MR/HoloCraft-Visor-Addon.git
 	branch = main
