@@ -4,13 +4,21 @@
 #   scripts/build.sh pojlib unity
 #   scripts/build.sh install         # adb install the last APK
 #   scripts/build.sh visor addon server   # Fabric dedicated server zip
+#   scripts/build.sh --no-addon      # plain QuestCraft + Visor, no add-on (or NO_ADDON=1)
 set -euo pipefail
+
+NO_ADDON="${NO_ADDON:-0}"
+if [ "${1:-}" = --no-addon ]; then NO_ADDON=1; shift; fi
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MC=1.20.1
 UNITY="${UNITY:-/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity}"
 OUT="${OUT:-$ROOT/outputs}"
-APK="$OUT/HoloCraft-$MC.apk"
+if [ "$NO_ADDON" = 1 ]; then
+  APK="$OUT/QuestCraft-Visor-$MC.apk"
+else
+  APK="$OUT/HoloCraft-$MC.apk"
+fi
 SERVER_ZIP="$OUT/HoloCraft-Server-$MC.zip"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
 VERSION="${VERSION:-$(git -C "$ROOT" describe --tags 2>/dev/null || echo "dev-$(git -C "$ROOT" rev-parse --short HEAD)")}"
@@ -52,10 +60,15 @@ mods() {
   local dest="$ROOT/Pojlib/src/main/assets/mods"
   local visor_jar addon_jar
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
   cp "$visor_jar" "$dest/Visor.jar"
-  cp "$addon_jar" "$dest/HoloCraftMR.jar"
   echo "$(basename "$visor_jar") -> Visor.jar"
+  if [ "$NO_ADDON" = 1 ]; then
+    rm -f "$dest/HoloCraftMR.jar"
+    echo "No add-on"
+    return
+  fi
+  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  cp "$addon_jar" "$dest/HoloCraftMR.jar"
   echo "$(basename "$addon_jar") -> HoloCraftMR.jar"
 }
 
@@ -94,7 +107,8 @@ server() {
   log "Fabric $MC dedicated server"
   local visor_jar addon_jar dir
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  addon_jar=
+  [ "$NO_ADDON" = 1 ] || addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
   dir=$(mktemp -d)
   mkdir -p "$dir/mods" "$OUT"
 
@@ -102,7 +116,7 @@ server() {
     "https://meta.fabricmc.net/v2/versions/loader/$MC/$FABRIC_LOADER/$FABRIC_INSTALLER/server/jar"
   curl -fsSL -o "$dir/mods/fabric-api-$FABRIC_API.jar" \
     "https://maven.fabricmc.net/net/fabricmc/fabric-api/fabric-api/$FABRIC_API/fabric-api-$FABRIC_API.jar"
-  cp "$visor_jar" "$addon_jar" "$dir/mods/"
+  cp "$visor_jar" $addon_jar "$dir/mods/"
 
   cat > "$dir/start.sh" <<'EOF'
 #!/bin/sh
@@ -121,6 +135,11 @@ EOF
 
 steps=("$@")
 [ ${#steps[@]} -gt 0 ] || steps=(atumvr visor addon mods pojlib unity)
+if [ "$NO_ADDON" = 1 ]; then
+  kept=()
+  for step in "${steps[@]}"; do [ "$step" = addon ] || kept+=("$step"); done
+  steps=("${kept[@]}")
+fi
 
 for step in "${steps[@]}"; do
   case "$step" in
