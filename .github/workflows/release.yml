@@ -102,7 +102,7 @@ jobs:
           rm -f "$RUNNER_TEMP/release.keystore"
 
       - name: Add-on jar
-        run: cp HoloCraft-MR/build/libs/HoloCraftMR-*[0-9].jar outputs/
+        run: cp HoloCraft-MR/build/libs/*[0-9].jar outputs/
 
       - uses: softprops/action-gh-release@v2
         with:

@@ -52,11 +52,11 @@ mods() {
   local dest="$ROOT/Pojlib/src/main/assets/mods"
   local visor_jar addon_jar
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
   cp "$visor_jar" "$dest/Visor.jar"
-  cp "$addon_jar" "$dest/HoloCraftMR.jar"
+  cp "$addon_jar" "$dest/Plinth.jar"
   echo "$(basename "$visor_jar") -> Visor.jar"
-  echo "$(basename "$addon_jar") -> HoloCraftMR.jar"
+  echo "$(basename "$addon_jar") -> Plinth.jar"
 }
 
 pojlib() {
@@ -94,7 +94,7 @@ server() {
   log "Fabric $MC dedicated server"
   local visor_jar addon_jar dir
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
   dir=$(mktemp -d)
   mkdir -p "$dir/mods" "$OUT"
 
