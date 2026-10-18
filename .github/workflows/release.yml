@@ -46,7 +46,7 @@ jobs:
       - name: Server zip
         run: |
           scripts/build.sh server
-          mv outputs/HoloCraft-Server-1.20.1.zip "outputs/HoloCraft-Server-${VERSION#v}.zip"
+          mv outputs/Plinth-Server-1.20.1.zip "outputs/Plinth-Server-${VERSION#v}.zip"
 
       # BuildAndroid writes to <project>/../../outputs, so nest the project
       # two levels down to keep that inside the workspace.
@@ -82,8 +82,8 @@ jobs:
           KEY_PASS: ${{ secrets.ANDROID_KEY_PASS }}
         run: |
           mkdir -p outputs
-          apk="outputs/HoloCraft-${VERSION#v}.apk"
-          src=ci/outputs/HoloCraft-1.20.1.apk
+          apk="outputs/Plinth-${VERSION#v}.apk"
+          src=ci/outputs/Plinth-1.20.1.apk
           sudo chown "$(id -u)" "$src"
           if [ -z "$KEYSTORE_BASE64" ]; then
             echo "::warning::No keystore secret, shipping the debug-signed APK"

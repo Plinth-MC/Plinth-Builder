@@ -10,8 +10,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 MC=1.20.1
 UNITY="${UNITY:-/Applications/Unity/Hub/Editor/6000.4.10f1/Unity.app/Contents/MacOS/Unity}"
 OUT="${OUT:-$ROOT/outputs}"
-APK="$OUT/HoloCraft-$MC.apk"
-SERVER_ZIP="$OUT/HoloCraft-Server-$MC.zip"
+APK="$OUT/Plinth-$MC.apk"
+SERVER_ZIP="$OUT/Plinth-Server-$MC.zip"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
 VERSION="${VERSION:-$(git -C "$ROOT" describe --tags 2>/dev/null || echo "dev-$(git -C "$ROOT" rev-parse --short HEAD)")}"
 
@@ -72,7 +72,7 @@ unity() {
   mkdir -p "$ROOT/logs" "$OUT"
   # The editor build method writes to <wrapper>/../../outputs, so move it after.
   local unity_out
-  unity_out="$(cd "$ROOT/.." && pwd)/outputs/HoloCraft-$MC.apk"
+  unity_out="$(cd "$ROOT/.." && pwd)/outputs/Plinth-$MC.apk"
   "$UNITY" -batchmode -quit \
     -projectPath "$ROOT/QCXR-XR-Wrapper" \
     -buildTarget Android \
