@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the HoloCraft APK. Run all steps, or name the ones you want:
+# Build the Plinth APK. Run all steps, or name the ones you want:
 #   scripts/build.sh                 # atumvr visor addon mods pojlib unity
 #   scripts/build.sh pojlib unity
 #   scripts/build.sh install         # adb install the last APK
@@ -17,9 +17,9 @@ OUT="${OUT:-$ROOT/outputs}"
 if [ "$NO_ADDON" = 1 ]; then
   APK="$OUT/QuestCraft-Visor-$MC.apk"
 else
-  APK="$OUT/HoloCraft-$MC.apk"
+  APK="$OUT/Plinth-$MC.apk"
 fi
-SERVER_ZIP="$OUT/HoloCraft-Server-$MC.zip"
+SERVER_ZIP="$OUT/Plinth-Server-$MC.zip"
 MIN_FREE_GB="${MIN_FREE_GB:-5}"
 VERSION="${VERSION:-$(git -C "$ROOT" describe --tags 2>/dev/null || echo "dev-$(git -C "$ROOT" rev-parse --short HEAD)")}"
 
@@ -51,7 +51,7 @@ visor() {
 }
 
 addon() {
-  log "HoloCraft MR add-on"
+  log "Plinth add-on"
   (cd "$ROOT/HoloCraft-MR" && sh ./gradlew build -PvisorPath="$ROOT/Visor")
 }
 
@@ -63,13 +63,13 @@ mods() {
   cp "$visor_jar" "$dest/Visor.jar"
   echo "$(basename "$visor_jar") -> Visor.jar"
   if [ "$NO_ADDON" = 1 ]; then
-    rm -f "$dest/HoloCraftMR.jar"
+    rm -f "$dest/Plinth.jar" "$dest/HoloCraftMR.jar"
     echo "No add-on"
     return
   fi
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
-  cp "$addon_jar" "$dest/HoloCraftMR.jar"
-  echo "$(basename "$addon_jar") -> HoloCraftMR.jar"
+  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
+  cp "$addon_jar" "$dest/Plinth.jar"
+  echo "$(basename "$addon_jar") -> Plinth.jar"
 }
 
 pojlib() {
@@ -85,7 +85,7 @@ unity() {
   mkdir -p "$ROOT/logs" "$OUT"
   # The editor build method writes to <wrapper>/../../outputs, so move it after.
   local unity_out
-  unity_out="$(cd "$ROOT/.." && pwd)/outputs/HoloCraft-$MC.apk"
+  unity_out="$(cd "$ROOT/.." && pwd)/outputs/Plinth-$MC.apk"
   "$UNITY" -batchmode -quit \
     -projectPath "$ROOT/QCXR-XR-Wrapper" \
     -buildTarget Android \
@@ -108,7 +108,7 @@ server() {
   local visor_jar addon_jar dir
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
   addon_jar=
-  [ "$NO_ADDON" = 1 ] || addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/HoloCraftMR-*.jar | grep -v -- '-sources' | head -n1)
+  [ "$NO_ADDON" = 1 ] || addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
   dir=$(mktemp -d)
   mkdir -p "$dir/mods" "$OUT"
 
