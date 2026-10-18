@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the HoloCraft APK. Run all steps, or name the ones you want:
+# Build the Plinth APK. Run all steps, or name the ones you want:
 #   scripts/build.sh                 # atumvr visor addon mods pojlib unity
 #   scripts/build.sh pojlib unity
 #   scripts/build.sh install         # adb install the last APK
@@ -43,7 +43,7 @@ visor() {
 }
 
 addon() {
-  log "HoloCraft MR add-on"
+  log "Plinth add-on"
   (cd "$ROOT/HoloCraft-MR" && sh ./gradlew build -PvisorPath="$ROOT/Visor")
 }
 
