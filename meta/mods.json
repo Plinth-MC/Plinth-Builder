@@ -1,0 +1,46 @@
+{
+  "versions": [
+    {
+      "name": "1.20.1",
+      "coreMods": [
+        {
+          "slug": "Fabric-API",
+          "version": "0.92.12",
+          "download_link": "https://cdn.modrinth.com/data/P7dR8mSH/versions/rvI2dfzR/fabric-api-0.92.12%2B1.20.1.jar"
+        }
+      ],
+      "defaultMods": [
+        {
+          "slug": "Lithium",
+          "version": "mc1.20.1-0.11.4-fabric",
+          "download_link": "https://cdn.modrinth.com/data/gvQqBUqZ/versions/iEcXOkz4/lithium-fabric-mc1.20.1-0.11.4.jar"
+        },
+        {
+          "slug": "Ferrite-Core",
+          "version": "6.0.1",
+          "download_link": "https://cdn.modrinth.com/data/uXXizFIs/versions/unerR5MN/ferritecore-6.0.1-fabric.jar"
+        },
+        {
+          "slug": "Sodium",
+          "version": "mc1.20.1-0.5.13-fabric",
+          "download_link": "https://cdn.modrinth.com/data/AANobbMI/versions/OihdIimA/sodium-fabric-0.5.13%2Bmc1.20.1.jar"
+        },
+        {
+          "slug": "Cloth-Config",
+          "version": "11.1.136+fabric",
+          "download_link": "https://cdn.modrinth.com/data/9s6osm5g/versions/2xQdCMyG/cloth-config-11.1.136-fabric.jar"
+        },
+        {
+          "slug": "ImmediatelyFast",
+          "version": "1.5.5+1.20.4-fabric",
+          "download_link": "https://cdn.modrinth.com/data/5ZwdcRci/versions/iwYUrQJO/ImmediatelyFast-Fabric-1.5.5%2B1.20.4.jar"
+        },
+        {
+          "slug": "ModernFix",
+          "version": "5.24.0",
+          "download_link": "https://github.com/embeddedt/ModernFix/releases/download/5.24.0%2B1.20.1/modernfix-fabric-5.24.0+mc1.20.1.jar"
+        }
+      ]
+    }
+  ]
+}
