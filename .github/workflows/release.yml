@@ -102,7 +102,9 @@ jobs:
           rm -f "$RUNNER_TEMP/release.keystore"
 
       - name: Add-on jar
-        run: cp HoloCraft-MR/build/libs/*[0-9].jar outputs/
+        run: |
+          jar="HoloCraft-MR/build/libs/Plinth-$(tr -d '[:space:]' < HoloCraft-MR/VERSION)+$(git -C HoloCraft-MR rev-parse --short HEAD).jar"
+          cp "$jar" outputs/
 
       - uses: softprops/action-gh-release@v2
         with:
