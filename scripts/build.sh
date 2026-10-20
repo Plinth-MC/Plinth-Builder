@@ -50,6 +50,17 @@ visor() {
   (cd "$ROOT/Visor" && sh ./gradlew --configure-on-demand ":visor-fabric:$MC:build")
 }
 
+# Exact add-on jar for the checked-out commit: Plinth-<VERSION>+<short hash>.jar
+# (build/libs can hold older builds, so no globbing)
+addon_jar_path() {
+  local dir="$ROOT/HoloCraft-MR" ver commit name
+  ver=$(tr -d '[:space:]' < "$dir/VERSION")
+  commit=$(git -C "$dir" rev-parse --short HEAD 2>/dev/null || true)
+  name="Plinth-$ver${commit:++$commit}.jar"
+  [ -f "$dir/build/libs/$name" ] || { echo "Add-on jar not found: $dir/build/libs/$name" >&2; return 1; }
+  echo "$dir/build/libs/$name"
+}
+
 addon() {
   log "Plinth add-on"
   (cd "$ROOT/HoloCraft-MR" && sh ./gradlew build -PvisorPath="$ROOT/Visor")
@@ -67,7 +78,7 @@ mods() {
     echo "No add-on"
     return
   fi
-  addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
+  addon_jar=$(addon_jar_path) || exit 1
   cp "$addon_jar" "$dest/Plinth.jar"
   echo "$(basename "$addon_jar") -> Plinth.jar"
 }
@@ -108,7 +119,7 @@ server() {
   local visor_jar addon_jar dir
   visor_jar=$(ls "$ROOT"/Visor/visor-fabric/versions/$MC/build/libs/Visor-*+mc$MC-fabric.jar | head -n1)
   addon_jar=
-  [ "$NO_ADDON" = 1 ] || addon_jar=$(ls "$ROOT"/HoloCraft-MR/build/libs/*.jar | grep -v -- '-sources' | head -n1)
+  if [ "$NO_ADDON" != 1 ]; then addon_jar=$(addon_jar_path) || exit 1; fi
   dir=$(mktemp -d)
   mkdir -p "$dir/mods" "$OUT"
 
